@@ -60,6 +60,12 @@ namespace ComLib {
                 var content = state.StringBuilder.ToString();
                 if (content.IndexOf(Environment.NewLine, StringComparison.Ordinal) > -1) {
                     state.StringBuilder.Clear();
+                    if (content == "Time") {
+                    }
+                    else if (content == "Course") {
+                    }
+                    else if (content == "Name") {
+                    }
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
                     handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
