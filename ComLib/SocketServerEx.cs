@@ -61,6 +61,7 @@ namespace ComLib {
                 if (content.IndexOf(Environment.NewLine, StringComparison.Ordinal) > -1) {
                     state.StringBuilder.Clear();
                     if (content == "Time") {
+                        state.WorkSocket.Send(Encoding.ASCII.GetBytes("Hello"));
                     }
                     else if (content == "Course") {
                     }
