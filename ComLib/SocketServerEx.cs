@@ -58,7 +58,8 @@ namespace ComLib {
             if (bytresRead > 0) {
                 state.StringBuilder.Append(Encoding.ASCII.GetString(state.Buffer, 0, bytresRead));
                 var content = state.StringBuilder.ToString();
-                if (content.IndexOf("\n", StringComparison.Ordinal) > -1) {
+                if (content.IndexOf(Environment.NewLine, StringComparison.Ordinal) > -1) {
+                    state.StringBuilder.Clear();
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
                     handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
