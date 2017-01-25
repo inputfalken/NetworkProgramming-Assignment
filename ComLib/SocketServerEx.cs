@@ -53,9 +53,11 @@ namespace ComLib {
             if (bytresRead > 0) {
                 state.StringBuilder.Append(Encoding.ASCII.GetString(state.Buffer, 0, bytresRead));
                 var content = state.StringBuilder.ToString();
-                if (content.IndexOf(Environment.NewLine, StringComparison.Ordinal) > -1) {
+                var newLineIndex = content.IndexOf(Environment.NewLine, StringComparison.Ordinal);
+                if (newLineIndex > -1) {
+                    content = content.Remove(newLineIndex);
                     state.StringBuilder.Clear();
-                    if (content == "Time\r\n") {
+                    if (content == "Time") {
                         handler.BeginSend(Encoding.ASCII.GetBytes("hello"), 0, "hello".Length, SocketFlags.None, SendCallback, handler);
                     }
                     else if (content == "Course") {
