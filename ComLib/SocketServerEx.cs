@@ -74,6 +74,8 @@ namespace ComLib {
         }
 
         private static void SendCallback(IAsyncResult ar) {
+            var stateObject = (Socket) ar.AsyncState;
+            stateObject.EndSend(ar);
         }
     }
 
