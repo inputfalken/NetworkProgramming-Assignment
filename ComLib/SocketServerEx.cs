@@ -15,12 +15,8 @@ namespace ComLib {
 
         private static readonly AutoResetEvent AllDone = new AutoResetEvent(false);
         public static string GetData { get; private set; }
-
-//      private static readonly IPHostEntry IpHostInfo = Dns.GetHostEntry("Localhost");
-//      private static readonly IPAddress IpAddress = IpHostInfo.AddressList[0];
-//      public static string GetIp => IpAddress.ToString();
         public static AutoResetEvent GetAutoResetEvent { get; } = new AutoResetEvent(false);
-
+        private static readonly StateObject So = new StateObject();
         public static void CloseSocket() => Listener.Close();
 
         public static void StartListening(string strport, string ipAddr) {
@@ -60,8 +56,8 @@ namespace ComLib {
                 var content = state.StringBuilder.ToString();
                 if (content.IndexOf(Environment.NewLine, StringComparison.Ordinal) > -1) {
                     state.StringBuilder.Clear();
-                    if (content == "Time") {
-                        state.WorkSocket.Send(Encoding.ASCII.GetBytes("Hello"));
+                    if (content == "Time\r\n") {
+                        handler.BeginSend(Encoding.ASCII.GetBytes("hello"), 0, "hello".Length, SocketFlags.None, SendCallback, handler);
                     }
                     else if (content == "Course") {
                     }
@@ -76,9 +72,12 @@ namespace ComLib {
                 }
             }
         }
+
+        private static void SendCallback(IAsyncResult ar) {
+        }
     }
 
-    internal class StateObject {
+    public class StateObject {
         public Socket WorkSocket;
         public const int BufferSize = 1024;
         public readonly byte[] Buffer = new byte[BufferSize];
