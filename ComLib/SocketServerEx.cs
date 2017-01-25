@@ -18,6 +18,7 @@ namespace ComLib {
         public static AutoResetEvent GetAutoResetEvent { get; } = new AutoResetEvent(false);
         public static void CloseSocket() => Listener.Close();
 
+
         public static void StartListening(string strport, string ipAddr) {
             var bytes = new byte[1024];
             var port = int.Parse(strport);
@@ -61,6 +62,10 @@ namespace ComLib {
                     else if (content == "Course") SendToClient("Network Programming", state.WorkSocket);
                     else if (content == "Name") SendToClient("Robert", state.WorkSocket);
 
+                    if (Messages.Count != state.MessageCount) {
+                        SendToClient(Messages.Last(), state.WorkSocket);
+                        state.MessageCount++;
+                    }
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
                     handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
@@ -71,6 +76,11 @@ namespace ComLib {
             }
         }
 
+        private static readonly List<string> Messages = new List<string>();
+
+        public static void SendMessageToClient(string message) {
+           Messages.Add(message); 
+        }
         private static void SendToClient(string message, Socket socket) {
             socket.BeginSend(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None, SendCallback, socket);
         }
@@ -82,6 +92,7 @@ namespace ComLib {
     }
 
     public class StateObject {
+        public int MessageCount { get; set; }
         public Socket WorkSocket;
         public const int BufferSize = 1024;
         public readonly byte[] Buffer = new byte[BufferSize];

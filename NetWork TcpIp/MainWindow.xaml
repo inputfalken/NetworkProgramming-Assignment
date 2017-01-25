@@ -19,6 +19,6 @@
                 VerticalAlignment="Top" Width="100" Click="BtnStart_Click" />
         <Button x:Name="BtnExit" Content="Exit" HorizontalAlignment="Left" Margin="416,289,0,0"
                 VerticalAlignment="Top" Width="75" Click="BtnExit_Click" />
-        <TextBox x:Name="SendMessageTb" HorizontalAlignment="Left" Height="23" Margin="32,213,0,0" TextWrapping="Wrap" KeyUp="SendMessageTb_OnTextChanged" Text="Send message..." VerticalAlignment="Top" Width="183"/>
+        <TextBox x:Name="SendMessageTb" HorizontalAlignment="Left" Height="23" Margin="32,213,0,0" TextWrapping="Wrap" KeyUp="SendMessageTb_OnKeyUp" Text="Send message..." VerticalAlignment="Top" Width="183"/>
     </Grid>
 </Window>
