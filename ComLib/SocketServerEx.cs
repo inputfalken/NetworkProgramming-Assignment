@@ -16,7 +16,6 @@ namespace ComLib {
         private static readonly AutoResetEvent AllDone = new AutoResetEvent(false);
         public static string GetData { get; private set; }
         public static AutoResetEvent GetAutoResetEvent { get; } = new AutoResetEvent(false);
-        private static readonly StateObject So = new StateObject();
         public static void CloseSocket() => Listener.Close();
 
         public static void StartListening(string strport, string ipAddr) {
