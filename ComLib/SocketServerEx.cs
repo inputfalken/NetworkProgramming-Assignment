@@ -58,11 +58,13 @@ namespace ComLib {
                     content = content.Remove(newLineIndex);
                     state.StringBuilder.Clear();
                     if (content == "Time") {
-                        handler.BeginSend(Encoding.ASCII.GetBytes("hello"), 0, "hello".Length, SocketFlags.None, SendCallback, handler);
+                        SendToClient(DateTime.Now.ToShortDateString(), state.WorkSocket);
                     }
                     else if (content == "Course") {
+                        SendToClient("Network Programming", state.WorkSocket);
                     }
                     else if (content == "Name") {
+                        SendToClient("Robert", state.WorkSocket);
                     }
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
@@ -72,6 +74,10 @@ namespace ComLib {
                     handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
                 }
             }
+        }
+
+        private static void SendToClient(string message, Socket socket) {
+            socket.BeginSend(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None, SendCallback, socket);
         }
 
         private static void SendCallback(IAsyncResult ar) {
