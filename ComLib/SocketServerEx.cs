@@ -57,15 +57,10 @@ namespace ComLib {
                 if (newLineIndex > -1) {
                     content = content.Remove(newLineIndex);
                     state.StringBuilder.Clear();
-                    if (content == "Time") {
-                        SendToClient(DateTime.Now.ToShortDateString(), state.WorkSocket);
-                    }
-                    else if (content == "Course") {
-                        SendToClient("Network Programming", state.WorkSocket);
-                    }
-                    else if (content == "Name") {
-                        SendToClient("Robert", state.WorkSocket);
-                    }
+                    if (content == "Time") SendToClient(DateTime.Now.ToShortDateString(), state.WorkSocket);
+                    else if (content == "Course") SendToClient("Network Programming", state.WorkSocket);
+                    else if (content == "Name") SendToClient("Robert", state.WorkSocket);
+
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
                     handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
