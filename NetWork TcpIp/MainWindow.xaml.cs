@@ -53,10 +53,8 @@ namespace NetWork_TcpIp {
                 SocketServerEx.GetAutoResetEvent.WaitOne();
                 var str = SocketServerEx.GetData;
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Background, new ThreadStart(
-                        delegate {
-                            TbConsoleOutPut.Text =
-                                $"{DateTime.Now.ToShortDateString()} Client: {str} {TbConsoleOutPut.Text}";
-                        }
+                        () => TbConsoleOutPut.AppendText(
+                            $"{DateTime.Now.ToShortDateString()} Client: {str} {Environment.NewLine}")
                     )
                 );
             }
@@ -64,7 +62,7 @@ namespace NetWork_TcpIp {
 
         private void SendMessageTb_OnKeyUp(object sender, KeyEventArgs e) {
             if (e.Key != Key.Enter) return;
-            SocketServerEx.MessageClient(SendMessageTb.Text);
+            SocketServerEx.MessageClient($"{SendMessageTb.Text}{Environment.NewLine}");
             SendMessageTb.Text = string.Empty;
         }
     }
