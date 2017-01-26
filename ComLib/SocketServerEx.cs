@@ -49,38 +49,34 @@ namespace ComLib {
 
         private static void ReadCallBack(IAsyncResult ar) {
             var state = (StateObject) ar.AsyncState;
-            var handler = state.WorkSocket;
-            var bytresRead = handler.EndReceive(ar);
-            if (bytresRead > 0) {
-                state.StringBuilder.Append(Encoding.ASCII.GetString(state.Buffer, 0, bytresRead));
+            var dataRecieved = state.WorkSocket.EndReceive(ar);
+            if (dataRecieved > 0) {
+                var data = Encoding.ASCII.GetString(state.Buffer, 0, dataRecieved);
+                state.StringBuilder.Append(data);
                 var content = state.StringBuilder.ToString();
-                var newLineIndex = content.IndexOf(Environment.NewLine, StringComparison.Ordinal);
-                if (newLineIndex > -1) {
-                    content = content.Remove(newLineIndex);
+                if (data == Environment.NewLine) {
+                    content = content.Replace(data, string.Empty);
                     state.StringBuilder.Clear();
                     if (content == "Time") SendToClient(DateTime.Now.ToShortDateString(), state.WorkSocket);
                     else if (content == "Course") SendToClient("Network Programming", state.WorkSocket);
                     else if (content == "Name") SendToClient("Robert", state.WorkSocket);
-
-                    if (Messages.Count != state.MessageCount) {
-                        SendToClient(Messages.Last(), state.WorkSocket);
-                        state.MessageCount++;
-                    }
                     GetData = content + GetData;
                     GetAutoResetEvent.Set();
-                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
                 }
-                else {
-                    handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
+                if (Messages.Count != state.MessageCount) {
+                    SendToClient(Messages.Last(), state.WorkSocket);
+                    state.MessageCount++;
                 }
+                state.WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
             }
         }
 
         private static readonly List<string> Messages = new List<string>();
 
         public static void SendMessageToClient(string message) {
-           Messages.Add(message); 
+            Messages.Add(message);
         }
+
         private static void SendToClient(string message, Socket socket) {
             socket.BeginSend(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None, SendCallback, socket);
         }
