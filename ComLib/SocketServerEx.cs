@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Functional.Maybe;
 
 namespace ComLib {
     public static class SocketServerEx {
@@ -47,28 +48,35 @@ namespace ComLib {
             handler.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
         }
 
+        private static Maybe<string> Services(string str) {
+            if (str == "Time") return DateTime.Now.ToShortDateString().ToMaybe();
+            if (str == "Course") return "Network Programming".ToMaybe();
+            if (str == "Name") return "Robert".ToMaybe();
+            return Maybe<string>.Nothing;
+        }
+
         private static void ReadCallBack(IAsyncResult ar) {
             var state = (StateObject) ar.AsyncState;
-            var dataRecieved = state.WorkSocket.EndReceive(ar);
-            if (dataRecieved > 0) {
-                var data = Encoding.ASCII.GetString(state.Buffer, 0, dataRecieved);
-                state.StringBuilder.Append(data);
-                var content = state.StringBuilder.ToString();
-                if (data == Environment.NewLine) {
-                    content = content.Replace(data, string.Empty);
+            state.WorkSocket.EndReceive(ar)
+                .ToMaybe()
+                .Where(i => i > 0)
+                .Select(i => Encoding.ASCII.GetString(state.Buffer, 0, i))
+                .Select(data => new {builder = state.StringBuilder.Append(data), txt = data})
+                .Where(arg => arg.txt == Environment.NewLine)
+                .Select(arg => arg.builder.Replace(arg.txt, string.Empty).ToString())
+                .Do(message => {
                     state.StringBuilder.Clear();
-                    if (content == "Time") SendToClient(DateTime.Now.ToShortDateString(), state.WorkSocket);
-                    else if (content == "Course") SendToClient("Network Programming", state.WorkSocket);
-                    else if (content == "Name") SendToClient("Robert", state.WorkSocket);
-                    GetData = content + GetData;
+                    GetData = message;
                     GetAutoResetEvent.Set();
-                }
-                if (Messages.Count != state.MessageCount) {
-                    SendToClient(Messages.Last(), state.WorkSocket);
-                    state.MessageCount++;
-                }
-                state.WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
+                })
+                .SelectMany(Services)
+                .Do(s => SendToClient(s, state.WorkSocket));
+
+            if (Messages.Count != state.MessageCount) {
+                SendToClient(Messages.Last(), state.WorkSocket);
+                state.MessageCount++;
             }
+            state.WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
         }
 
         private static readonly List<string> Messages = new List<string>();
