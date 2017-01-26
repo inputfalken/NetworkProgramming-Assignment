@@ -64,7 +64,7 @@ namespace NetWork_TcpIp {
 
         private void SendMessageTb_OnKeyUp(object sender, KeyEventArgs e) {
             if (e.Key != Key.Enter) return;
-            SocketServerEx.SendMessageToClient(SendMessageTb.Text);
+            SocketServerEx.MessageClient(SendMessageTb.Text);
             SendMessageTb.Text = string.Empty;
         }
     }

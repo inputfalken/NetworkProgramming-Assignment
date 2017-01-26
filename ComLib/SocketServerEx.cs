@@ -55,8 +55,10 @@ namespace ComLib {
             return Maybe<string>.Nothing;
         }
 
+
         private static void ReadCallBack(IAsyncResult ar) {
             var state = (StateObject) ar.AsyncState;
+            _messageClient = ParameterizeMessageClient(state.WorkSocket);
             state.WorkSocket.EndReceive(ar).ToMaybe()
                 .Where(i => i > 0) // Checks if theres any bytes.
                 .Select(i => Encoding.ASCII.GetString(state.Buffer, 0, i)) // Map bytes to string
@@ -70,24 +72,17 @@ namespace ComLib {
                     GetAutoResetEvent.Set();
                 }) //Print message sent by client
                 .SelectMany(Services) // If this returns a value we need to respond.
-                .Do(s => SendToClient(s, state.WorkSocket));
-
-            if (Messages.Count != state.MessageCount) {
-                SendToClient(Messages.Last(), state.WorkSocket);
-                state.MessageCount++;
-            }
+                .Do(MessageClient);
+            ParameterizeMessageClient(state.WorkSocket);
             state.WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
         }
 
-        private static readonly List<string> Messages = new List<string>();
+        private static Action<string> ParameterizeMessageClient(Socket socket)
+            => s => socket.BeginSend(Encoding.ASCII.GetBytes(s), 0, s.Length, SocketFlags.None, SendCallback, socket);
 
-        public static void SendMessageToClient(string message) {
-            Messages.Add(message);
-        }
+        private static Action<string> _messageClient;
 
-        private static void SendToClient(string message, Socket socket) {
-            socket.BeginSend(Encoding.ASCII.GetBytes(message), 0, message.Length, SocketFlags.None, SendCallback, socket);
-        }
+        public static void MessageClient(string message) => _messageClient?.Invoke(message);
 
         private static void SendCallback(IAsyncResult ar) {
             var stateObject = (Socket) ar.AsyncState;
@@ -96,7 +91,6 @@ namespace ComLib {
     }
 
     public class StateObject {
-        public int MessageCount { get; set; }
         public Socket WorkSocket;
         public const int BufferSize = 1024;
         public readonly byte[] Buffer = new byte[BufferSize];
