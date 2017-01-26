@@ -22,16 +22,18 @@ namespace NetWork_TcpIp {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        private static bool _running = true;
+        private static bool _running;
 
         public MainWindow() {
             InitializeComponent();
             TbPort.Text = "23000";
             TbIpAddress.Text = @"127.0.0.1";
+            Lstatus.Content = "Closed";
         }
 
         private void BtnStart_Click(object sender, RoutedEventArgs e) {
             var port = TbPort.Text;
+            _running = true;
             var ipaddress = TbIpAddress.Text;
             Task.Run(() => { SocketServerEx.StartListening(port, ipaddress); });
             Lstatus.Content = "Listening";
@@ -43,7 +45,7 @@ namespace NetWork_TcpIp {
             SocketServerEx.CloseSocket();
             _running = false;
             BtnStart.IsEnabled = true;
-            Close();
+            Lstatus.Content = "Closed";
         }
 
         private void GetDataAndUpdateConsoleOutputBox() {
@@ -61,9 +63,9 @@ namespace NetWork_TcpIp {
         }
 
         private void SendMessageTb_OnKeyUp(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Enter) {
-                SocketServerEx.SendMessageToClient(SendMessageTb.Text);
-            }
+            if (e.Key != Key.Enter) return;
+            SocketServerEx.SendMessageToClient(SendMessageTb.Text);
+            SendMessageTb.Text = string.Empty;
         }
     }
 }

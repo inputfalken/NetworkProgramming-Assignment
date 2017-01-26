@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Label x:Name="Lstatus" Content="Status" HorizontalAlignment="Left" Margin="32,0,0,0" VerticalAlignment="Top"
+
+        <Label Content="Status:" HorizontalAlignment="Left" Margin="32,0,0,0" VerticalAlignment="Top"
+               RenderTransformOrigin="0.464,-0.08" />
+        <Label x:Name="Lstatus"  HorizontalAlignment="Left" Margin="69,0,0,0" VerticalAlignment="Top"
                RenderTransformOrigin="0.464,-0.08" />
         <TextBox x:Name="TbConsoleOutPut" HorizontalAlignment="Left" Height="210" Margin="32,26,0,0"
                  TextWrapping="Wrap" VerticalAlignment="Top" Width="416" />
@@ -15,10 +18,11 @@
                  Text="127.0.0.1" VerticalAlignment="Top" Width="120" />
         <TextBox x:Name="TbPort" HorizontalAlignment="Left" Height="23" Margin="194,249,0,0" TextWrapping="Wrap"
                  Text="23000" VerticalAlignment="Top" Width="120" />
-        <Button x:Name="BtnStart" Content="Start Listening" HorizontalAlignment="Left" Margin="48,289,0,0"
+        <Button x:Name="BtnStart" Content="Open Connection" HorizontalAlignment="Left" Margin="48,289,0,0"
                 VerticalAlignment="Top" Width="100" Click="BtnStart_Click" />
-        <Button x:Name="BtnExit" Content="Exit" HorizontalAlignment="Left" Margin="416,289,0,0"
-                VerticalAlignment="Top" Width="75" Click="BtnExit_Click" />
-        <TextBox x:Name="SendMessageTb" HorizontalAlignment="Left" Height="23" Margin="32,213,0,0" TextWrapping="Wrap" KeyUp="SendMessageTb_OnKeyUp" Text="Send message..." VerticalAlignment="Top" Width="183"/>
+        <Button x:Name="BtnExit" Content="Close Connection" HorizontalAlignment="Left" Margin="390,289,0,0"
+                VerticalAlignment="Top" Width="100" Click="BtnExit_Click" />
+        <TextBox x:Name="SendMessageTb" HorizontalAlignment="Left" Height="23" Margin="32,213,0,0" TextWrapping="Wrap"
+                 KeyUp="SendMessageTb_OnKeyUp" Text="Send message..." VerticalAlignment="Top" Width="183" />
     </Grid>
 </Window>
