@@ -57,13 +57,13 @@ namespace ComLib {
 
         private static void ReadCallBack(IAsyncResult ar) {
             var state = (StateObject) ar.AsyncState;
-            state.WorkSocket.EndReceive(ar)
-                .ToMaybe()
+            state.WorkSocket.EndReceive(ar).ToMaybe()
                 .Where(i => i > 0) // Checks if theres any bytes.
                 .Select(i => Encoding.ASCII.GetString(state.Buffer, 0, i)) // Map bytes to string
-                .Select(data => new {builder = state.StringBuilder.Append(data), txt = data}) // Build the message
-                .Where(arg => arg.txt == Environment.NewLine) // If we get here, we have a message.
-                .Select(arg => arg.builder.Replace(arg.txt, string.Empty).ToString()) // Map the message.
+                .Do(s => state.StringBuilder.Append(s))
+                .Where(s => s == Environment.NewLine) // If we get here, we have a message.
+                .Select(s => state.StringBuilder.ToString()) // Map the message.
+                .Select(message => message.Replace(Environment.NewLine, string.Empty)) // Remove Newline
                 .Do(message => {
                     state.StringBuilder.Clear();
                     GetData = message;
