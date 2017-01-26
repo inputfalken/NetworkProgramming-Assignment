@@ -79,7 +79,7 @@ namespace ComLib {
 
         private static Action<string> _messageClient;
 
-        public static void MessageClient(string message) => _messageClient?.Invoke(message);
+        public static void MessageClient(string message) => _messageClient?.Invoke($"{message}{Environment.NewLine}");
 
         private static void SendCallback(IAsyncResult ar) {
             var stateObject = (Socket) ar.AsyncState;
