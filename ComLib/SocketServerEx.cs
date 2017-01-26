@@ -59,17 +59,17 @@ namespace ComLib {
             var state = (StateObject) ar.AsyncState;
             state.WorkSocket.EndReceive(ar)
                 .ToMaybe()
-                .Where(i => i > 0)
-                .Select(i => Encoding.ASCII.GetString(state.Buffer, 0, i))
-                .Select(data => new {builder = state.StringBuilder.Append(data), txt = data})
-                .Where(arg => arg.txt == Environment.NewLine)
-                .Select(arg => arg.builder.Replace(arg.txt, string.Empty).ToString())
+                .Where(i => i > 0) // Checks if theres any bytes.
+                .Select(i => Encoding.ASCII.GetString(state.Buffer, 0, i)) // Map bytes to string
+                .Select(data => new {builder = state.StringBuilder.Append(data), txt = data}) // Build the message
+                .Where(arg => arg.txt == Environment.NewLine) // If we get here, we have a message.
+                .Select(arg => arg.builder.Replace(arg.txt, string.Empty).ToString()) // Map the message.
                 .Do(message => {
                     state.StringBuilder.Clear();
                     GetData = message;
                     GetAutoResetEvent.Set();
-                })
-                .SelectMany(Services)
+                }) //Print message sent by client
+                .SelectMany(Services) // If this returns a value we need to respond.
                 .Do(s => SendToClient(s, state.WorkSocket));
 
             if (Messages.Count != state.MessageCount) {
