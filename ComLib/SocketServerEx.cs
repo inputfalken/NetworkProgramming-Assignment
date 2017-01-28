@@ -18,7 +18,6 @@ namespace ComLib {
 
 
         public static void StartListening(string strport, string ipAddr) {
-            var bytes = new byte[1024];
             var port = int.Parse(strport);
             var ipAddress = IPAddress.Parse(ipAddr);
             var localEndPoint = new IPEndPoint(ipAddress, port);
