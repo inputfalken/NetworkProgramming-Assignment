@@ -75,7 +75,6 @@ namespace ComLib {
                 }) //Print message sent by client
                 .SelectMany(Services) // If this returns a value we need to respond.
                 .Do(MessageClient);
-            ParameterizeMessageClient(state.WorkSocket);
             state.WorkSocket.BeginReceive(state.Buffer, 0, StateObject.BufferSize, 0, ReadCallBack, state);
         }
 
