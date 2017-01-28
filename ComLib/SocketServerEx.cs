@@ -46,9 +46,14 @@ namespace ComLib {
         }
 
         private static Maybe<string> Services(string str) {
-            if (str == "Time") return DateTime.Now.ToShortDateString().ToMaybe();
-            if (str == "Course") return "Network Programming".ToMaybe();
-            if (str == "Name") return "Robert".ToMaybe();
+            switch (str) {
+                case "Time":
+                    return DateTime.Now.ToShortDateString().ToMaybe();
+                case "Course":
+                    return "Network Programming".ToMaybe();
+                case "Name":
+                    return "Robert".ToMaybe();
+            }
             return Maybe<string>.Nothing;
         }
 
